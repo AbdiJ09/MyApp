@@ -8,13 +8,15 @@ import {
 } from "@chakra-ui/react";
 import { signUp } from "@/firebase/auth/signup";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthTitle from "@/app/components/AuthTitle";
 import Link from "next/link";
+import { useAuthContext } from "@/context/AuthContext";
 
 const Page = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const router = useRouter();
+  const { user } = useAuthContext();
   const handleForm = async (event: any) => {
     event.preventDefault();
     const { result, error } = await signUp(
@@ -24,12 +26,15 @@ const Page = () => {
     if (error) {
       return console.log(error);
     }
-    return router.push("/admin");
+    return router.push("/");
   };
   const handleInput = (e: any) => {
     const { name, value } = e.target;
     setCredentials((prevInputs) => ({ ...prevInputs, [name]: value }));
   };
+  useEffect(() => {
+    if (user) router.push("/");
+  }, [user, router]);
   return (
     <>
       <AuthTitle>Sign Up</AuthTitle>
